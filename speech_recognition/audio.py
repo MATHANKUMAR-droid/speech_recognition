@@ -21,7 +21,6 @@ class AudioData(object):
 
     Usually, instances of this class are obtained from ``recognizer_instance.record`` or ``recognizer_instance.listen``, or in the callback for ``recognizer_instance.listen_in_background``, rather than instantiating them directly.
     """
-
     def __init__(self, frame_data, sample_rate, sample_width):
         assert sample_rate > 0, "Sample rate must be a positive integer"
         assert (
@@ -79,13 +78,11 @@ class AudioData(object):
         ), "Sample width to convert to must be between 1 and 4 inclusive"
 
         raw_data = self.frame_data
-
         # make sure unsigned 8-bit audio (which uses unsigned samples) is handled like higher sample width audio (which uses signed samples)
         if self.sample_width == 1:
             raw_data = audioop.bias(
                 raw_data, 1, -128
             )  # subtract 128 from every sample to make them act like signed samples
-
         # resample audio at the desired rate if specified
         if convert_rate is not None and self.sample_rate != convert_rate:
             raw_data, _ = audioop.ratecv(
@@ -124,7 +121,6 @@ class AudioData(object):
                 raw_data = audioop.lin2lin(
                     raw_data, self.sample_width, convert_width
                 )
-
         # if the output is 8-bit audio with unsigned samples, convert the samples we've been treating as signed to unsigned again
         if convert_width == 1:
             raw_data = audioop.bias(
@@ -167,9 +163,6 @@ class AudioData(object):
     def get_aiff_data(self, convert_rate=None, convert_width=None):
         """
         Returns a byte string representing the contents of an AIFF-C file containing the audio represented by the ``AudioData`` instance.
-
-        If ``convert_width`` is specified and the audio samples are not ``convert_width`` bytes each, the resulting audio is converted to match.
-
         If ``convert_rate`` is specified and the audio sample rate is not ``convert_rate`` Hz, the resulting audio is resampled to match.
 
         Writing these bytes directly to a file results in a valid `AIFF-C file <https://en.wikipedia.org/wiki/Audio_Interchange_File_Format>`__.
